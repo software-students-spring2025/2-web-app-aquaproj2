@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile - RecipeShare</title>
-    <link rel="stylesheet" href="../../css/userfriends.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/userfriends.css') }}">
 </head>
 <body>
     <header>
-        <a href="profile.html" class="back-button">← Back</a>
+        <a href="{{ url_for('profile') }}" class="back-button">← Back</a>
         <h1>Edit Profile</h1>
     </header>
     
@@ -17,7 +17,7 @@
     </div>
     
     <div class="container">
-        <form id="edit-profile-form" class="profile-form" method="POST" action="profile.html" enctype="multipart/form-data">
+        <form id="edit-profile-form" class="profile-form" method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" value="Username" required>

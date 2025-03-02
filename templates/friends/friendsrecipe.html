@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe - Hazelnut Ice Cream </title>
-    <link rel="stylesheet" href="../../css/recipes.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recipes.css') }}">
     <!--For Like and Share Icons-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -12,23 +12,18 @@
     <header>
         <h1>Recipe Share</h1>
     </header>
-
     <div style="border: 1px solid black;">
         <p class="recipe-name">Hazelnut Ice Cream<p>
-
         <div class="image">
-            <img src="/assets/recipe.jpg" alt="image">
+            <img src="{{ url_for('static', filename='images/recipe.jpg') }}" alt="image">
         </div>
-
         <div>
             <button class="int-button">Like</button>
             <button class="int-button">Share</button>
         </div>
-
         <div class="ingredients-list">
             <p>Hazelnut, Heavy Cream, Sugar, Ice, Vanilla</p>
         </div>
-
         <div class="instructions-list">
             <ol>
                 <li class="center">Chop up Hazelnuts</li>
@@ -39,6 +34,5 @@
             </ol>
         </div>
     </div>
-
 </body>
 </html>

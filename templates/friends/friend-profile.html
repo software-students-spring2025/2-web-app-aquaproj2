@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friend Profile - RecipeShare</title>
-    <link rel="stylesheet" href="../../css/userfriends.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/userfriends.css') }}">
     
 </head>
 <body>
     <button class="back-button">
-        <a href="friends-list.html">Friends</a>
+        <a href="{{ url_for('friends_list') }}">Friends</a>
     </button>
     
     <header>
@@ -40,11 +40,10 @@
                 </div>
             </div>
             
-            <form action="friend-profile.html" method="POST">
+            <form action="{{ url_for('friend_profile', friend_id='1') }}" method="POST">
                 <input type="hidden" name="user_id" value="1">
                 <button type="submit" class="follow-button following">Following</button>
             </form>
-
             <div class="follow-container">
                 <button class="followers">Followers:</button>
                 <button class="following-btn">Following:</button>
@@ -54,8 +53,6 @@
         
         
     </div>
-
-
     <div class="profile-tabs">
         <a href="#" class="profile-tab active" id="my-recipes-tab">My Recipes</a>
     </div>
@@ -65,14 +62,14 @@
             <div class="recipe-card">
                 <div class="recipe-info">
                     <button class="RecipeButton">
-                        <h3><a href="#hazelnuticecream">Hazelnut Ice Cream</a></h3>
+                        <h3><a href="{{ url_for('recipe', recipe_id='hazelnuticecream') }}">Hazelnut Ice Cream</a></h3>
                     </button>
         
                     <div id="hazelnuticecream" class="popup">
                         <div class="popup-content">
                             <a href="#" class="close">&times;</a>
                             <h2>Hazelnut Ice Cream</h2>
-                            <iframe src="friendsrecipe.html"></iframe>
+                            <iframe src="{{ url_for('recipe') }}"></iframe>
                         </div>
                     </div>
                     <div class="recipe-meta">
@@ -81,18 +78,17 @@
                     </div>
                 </div>
             </div>
-
             <div class="recipe-card">
                 <div class="recipe-info">
                     <button class="RecipeButton">
-                        <h3><a href="#hazelnuticecream">Hazelnut Ice Cream</a></h3>
+                        <h3><a href="{{ url_for('recipe', recipe_id='hazelnuticecream2') }}">Hazelnut Ice Cream</a></h3>
                     </button>
         
-                    <div id="hazelnuticecream" class="popup">
+                    <div id="hazelnuticecream2" class="popup">
                         <div class="popup-content">
                             <a href="#" class="close">&times;</a>
                             <h2>Hazelnut Ice Cream</h2>
-                            <iframe src="friendsrecipe.html"></iframe>
+                            <iframe src="{{ url_for('recipe') }}"></iframe>
                         </div>
                     </div>
                     <div class="recipe-meta">

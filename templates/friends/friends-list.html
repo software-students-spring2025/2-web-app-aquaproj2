@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends - RecipeShare</title>
-    <link rel="stylesheet" href="../../css/friends.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/friends.css') }}">
 </head>
 <body>
     <div class="container">
         <button class="HomeButton">
-            <a href="../index.html">Home</a>
+            <a href="{{ url_for('index') }}">Home</a>
         </button>
-
         <header>
             <h1>Friends</h1>
         </header>
@@ -21,7 +20,7 @@
         </div>
         
         <div class="search-container">
-            <form action="friends-list.html" method="GET">
+            <form action="{{ url_for('friends_list') }}" method="GET">
                 <input type="text" id="friend-search" name="q" placeholder="Search friends..." class="search-input">
                 <button type="submit" class="search-button">Search</button>
             </form>
@@ -34,7 +33,7 @@
                     <p>12 recipes</p>
                     <span class="cuisine-tag">Italian</span>
                 </div>
-                <a href="friend-profile.html" class="view-button">View</a>
+                <a href="{{ url_for('friend_profile', friend_id='1') }}" class="view-button">View</a>
             </div>
             
             <div class="friend-card">
@@ -43,7 +42,7 @@
                     <p>8 recipes</p>
                     <span class="cuisine-tag">Mexican</span>
                 </div>
-                <a href="friend-profile.html" class="view-button">View</a>
+                <a href="{{ url_for('friend_profile', friend_id='2') }}" class="view-button">View</a>
             </div>
             
             <div class="friend-card">
@@ -52,14 +51,14 @@
                     <p>15 recipes</p>
                     <span class="cuisine-tag">Indian</span>
                 </div>
-                <a href="friend-profile.html" class="view-button">View</a>
+                <a href="{{ url_for('friend_profile', friend_id='3') }}" class="view-button">View</a>
             </div>
         </div>
         
         <div class="add-friend-container">
             <h2>Add Friends</h2>
             <div class="search-container">
-                <form action="friends-list.html" method="GET">
+                <form action="{{ url_for('friends_list') }}" method="GET">
                     <input type="text" name="q" placeholder="Search by username or email" class="search-input">
                     <button type="submit" class="search-button">Search</button>
                 </form>
@@ -87,5 +86,4 @@
         </div>
     </div> 
 </body>
-
 </html>

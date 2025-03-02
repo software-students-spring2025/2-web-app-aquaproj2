@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - RecipeShare</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/userfriends.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/userfriends.css') }}">
 </head>
 <body>
     <header>
@@ -18,7 +18,7 @@
             <div class="message info">Example message</div>
         </div>
         
-        <form id="register-form" class="auth-form" method="POST" action="login.html">
+        <form id="register-form" class="auth-form" method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -64,7 +64,7 @@
             
             <button type="submit" class="submit-button">Create Account</button>
         </form>
-        <p class="auth-link">Already have an account? <a href="login.html">Log In</a></p>
+        <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Log In</a></p>
     </div>
 </body>
 </html>

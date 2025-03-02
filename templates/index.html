@@ -4,33 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RecipeShare</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-
     <header>
         <h1>Recipe Share</h1>
     </header>
-
     <main>
-        <a href="user/profile.html" class="cta-button">My Profile</a>
+        <a href="{{ url_for('profile') }}" class="cta-button">My Profile</a>
     </main>
     
     <main>
-        <a href="editpage.html" class="cta-button">My Recipes</a>
+        <a href="{{ url_for('editpage') }}" class="cta-button">My Recipes</a>
     </main>
-
     <main>
-        <a href="friends/friends-list.html" class="cta-button">Friends</a>
+        <a href="{{ url_for('friends_list') }}" class="cta-button">Friends</a>
     </main>
-
     <main>
-        <a href="user/settings.html" class="cta-button">Settings</a>
+        <a href="{{ url_for('settings') }}" class="cta-button">Settings</a>
     </main>
-
     <main>
-        <a href="auth/login.html" class="cta-button">Log out</a>
+        <a href="{{ url_for('login') }}" class="cta-button">Log out</a>
     </main>
-
 </body>
 </html>

@@ -4,39 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - RecipeShare</title>
-    <link rel="stylesheet" href="../../css/myprofile.css">
-    <link rel="stylesheet" href="../../css/settings.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/myprofile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 </head>
 <body>
     <header>
-        <a href="../index.html" class="back-button">← Home</a>
+        <a href="{{ url_for('index') }}" class="back-button">← Home</a>
         <h1>Settings</h1>
     </header>
-
     <div class="container">
         <div class="auth-container">
             <h2>Account Settings</h2>
-
             <!-- Change Username -->
             <div class="form-group">
                 <label for="username">Change Username</label>
                 <input type="text" id="username" placeholder="Enter new username">
                 <button class="submit-button">Update Username</button>
             </div>
-
             <!-- Change Password -->
             <div class="form-group">
                 <label for="password">Change Password</label>
                 <input type="password" id="password" placeholder="Enter new password">
                 <button class="submit-button">Update Password</button>
             </div>
-
             <!-- Delete Account -->
             <div class="form-group">
                 <button class="delete-button">Delete Account</button>
             </div>
         </div>
     </div>
-
 </body>
 </html>

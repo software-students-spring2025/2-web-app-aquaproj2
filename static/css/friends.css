@@ -1,0 +1,138 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    padding: 20px;
+}
+
+
+.container {
+    max-width: 900px;
+    margin-left: 20px; 
+}
+
+/* Home Button */
+.HomeButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 5px;
+    border: none;
+}
+
+.HomeButton a {
+    text-decoration: none;
+    color: black;
+}
+
+.HomeButton:hover {
+    background-color: gray;
+}
+
+/* Page Title */
+header h1 {
+    font-size: 28px;
+    margin-top: 50px;  
+}
+
+/* Search bar */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    padding: 10px;
+    width: 250px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+.search-button {
+    padding: 10px;
+    background-color: lightskyblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: cyan;
+}
+
+/* Friends List */
+.friends-container {
+    margin-top: 20px;
+}
+
+.friend-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid lightgray;
+}
+
+/* Friend Info */
+.friend-info h3 {
+    font-size: 18px;
+}
+
+.cuisine-tag {
+    font-size: 14px;
+    color: purple;
+}
+
+/* View Button */
+.view-button {
+    background-color: blue;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.view-button:hover {
+    background-color: turquoise;
+}
+
+/* Suggested Friends */
+.suggestion-container {
+    margin-top: 20px;
+}
+
+.friend-suggestion {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    margin-bottom: 10px;
+}
+
+/* Add Friend Button */
+.add-button {
+    background-color: green;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: lightgreen;
+}

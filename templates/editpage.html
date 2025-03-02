@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RecipeShare</title>
-    <link rel="stylesheet" href="../css/editpage.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editpage.css') }}">
 </head>
 <body>
-
     <button class="HomeButton">
-        <a href="index.html">Home</a>
+        <a href="{{ url_for('index') }}">Home</a>
     </button>
     
-
     <!-- Sweets Section -->
     <!-- Specify details that the user can open and close on demand: Source: W3Schools
     <summary> is the clickable part that allows us to expand the contents of <details> -->
@@ -21,22 +19,19 @@
         <div class="SpecificRecipes">
             
             <button class="RecipeButton">
-                <a href="#hazelnuticecream">Hazelnut Ice Cream</a>
+                <a href="{{ url_for('recipe', recipe_id='hazelnuticecream') }}">Hazelnut Ice Cream</a>
             </button>
-
             <div id="hazelnuticecream" class="popup">
                 <div class="popup-content">
                     <a href="#" class="close">&times;</a>
                     <h2>Hazelnut Ice Cream</h2>
-                    <iframe src="recipe.html"></iframe>
+                    <iframe src="{{ url_for('recipe') }}"></iframe>
                 </div>
             </div>
-
             <button class="RecipeButton">Cheesecake</button>
             <a href="#AddNewSweet" class="AddRecipe"> Add Recipe</a>  <!-- href # to link to another seciton on same page: Source: W3Schools-->
         </div>
     </details>
-
     <!-- Savory Section -->
     <details class="TypeofRecipe">
         <summary class="ClickableCategory">Savory</summary>
@@ -46,10 +41,6 @@
             <a href="#AddNewSavory" class="AddRecipe"> Add Recipe</a>  
         </div>
     </details>
-
-
-
-
     <!-- Form for adding new recipe (Sweet) -->
     <div id="AddNewSweet" class="form">
         <div class="FormContent">
@@ -61,15 +52,12 @@
             <input type="text" placeholder="Ingredient 1">
             <input type="text" placeholder="Ingredient 2">
             <input type="text" placeholder="Ingredient 3">
-
             <label>Instructions:</label>
             <textarea type="Enter instructions"></textarea>
-
             <a href="#" class="SaveButton">Save</a>
             <a href="#" class="CloseButton">Cancel</a> 
         </div>
     </div>
-
     <!-- Form for adding new recipe (Savory) -->
     <div id="AddNewSavory" class="form">
         <div class="FormContent">
@@ -81,14 +69,11 @@
             <input type="text" placeholder="Ingredient 1">
             <input type="text" placeholder="Ingredient 2">
             <input type="text" placeholder="Ingredient 3">
-
             <label>Instructions:</label>
             <textarea type="Enter instructions"></textarea>
-
             <a href="#" class="SaveButton">Save</a>
             <a href="#" class="CloseButton">Cancel</a> 
         </div>
     </div>
-
 </body>
 </html>
