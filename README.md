@@ -25,7 +25,20 @@ RecipeShare is a mobile-friendly social platform that empowers home cooks to dis
 
 ## Steps necessary to run the software
 
-See instructions. Delete this line and place instructions to download, configure, and run the software here.
+1. **Clone the repository**:
+git clone https://github.com/software-students-spring2025/2-web-app-aquaproj2.git
+cd 2-web-app-aquaproj2
+2. **Create and activate a virtual environment**:
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+3. **Install the required dependencies**:
+pip install -r requirements.txt
+4. **Create a .env file in the project root directory with your MongoDB connection string**:
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority&appName=appname
+5. **Run the application**:
+python app.py
+6. **Open your browser and navigate to**: **http://127.0.0.1:5000**
 
 ## Task boards
 - [Sprint 1 Task Board](https://github.com/orgs/software-students-spring2025/projects/53)
+- [Sprint 2 Task Board](https://github.com/orgs/software-students-spring2025/projects/109)
