@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/myprofile.css') }}">
 </head>
 <body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <header>
         <a href="{{ url_for('index') }}" class="back-button">← Home</a>
         <h1>My Profile</h1>
@@ -16,12 +27,11 @@
     <div class="profile-container">
         <div class="profile-header">
             <div class="profile-image"></div>
-            <h2 class="profile-name">Username</h2>
-            <p class="profile-bio">Food enthusiast who loves experimenting with new flavors.</p>
+            <h2 class="profile-name">{{ user.username }}</h2>
+            <p class="profile-bio">{{ user.bio if user.bio else "No bio added yet." }}</p>
             
-            
-            <p class="followers">Followers:</p>
-            <p class="following">Following:</p>
+            <p class="followers">Followers: {{ user.followers|length if user.followers else 0 }}</p>
+            <p class="following">Following: {{ user.following|length if user.following else 0 }}</p>
         </div>
     
         <div class="profile-tabs">
@@ -31,47 +41,26 @@
         <!-- My Recipes Section -->
         <div class="tab-content" id="my-recipes-content">
             <div class="recipe-container">
-                <div class="recipe-card">
-                    <div class="recipe-info">
-                        <button class="RecipeButton">
-                            <h3><a href="{{ url_for('recipe', recipe_id='hazelnuticecream') }}">Hazelnut Ice Cream</a></h3>
-                        </button>
-            
-                        <div id="hazelnuticecream" class="popup">
-                            <div class="popup-content">
-                                <a href="#" class="close">&times;</a>
-                                <h2>Hazelnut Ice Cream</h2>
-                                <iframe src="{{ url_for('recipe') }}"></iframe>
+                {% if recipes %}
+                    {% for recipe in recipes %}
+                        <div class="recipe-card">
+                            <div class="recipe-info">
+                                <button class="RecipeButton">
+                                    <h3><a href="{{ url_for('recipe', recipe_id=recipe._id) }}">{{ recipe.name }}</a></h3>
+                                </button>
+                                <div class="recipe-meta">
+                                    <span class="time">{{ recipe.cooking_time }} mins</span>
+                                    <span class="difficulty">{{ recipe.difficulty }}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="recipe-meta">
-                            <span class="time">60 mins</span>
-                            <span class="difficulty">Intermediate</span>
-                        </div>
-                    </div>
-                </div>
-    
-                <div class="recipe-card">
-                    <div class="recipe-info">
-                        <button class="RecipeButton">
-                            <h3><a href="{{ url_for('recipe', recipe_id='grilledsalmon') }}">Grilled Salmon</a></h3>
-                        </button>
-                        <div id="grilledsalmon" class="popup">
-                            <div class="popup-content">
-                                <a href="#" class="close">&times;</a>
-                                <h2>Grilled Salmon</h2>
-                                <iframe src="{{ url_for('recipe') }}"></iframe>
-                            </div>
-                        </div>
-                        <div class="recipe-meta">
-                            <span class="time">30 mins</span>
-                            <span class="difficulty">Easy</span>
-                        </div>
-                    </div>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-items">No recipes added yet.</p>
+                    <a href="{{ url_for('editpage') }}" class="cta-button">Add your first recipe</a>
+                {% endif %}
             </div>
         </div>
     </div>
-    
 </body>
 </html>

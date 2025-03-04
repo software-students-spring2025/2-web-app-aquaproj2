@@ -34,10 +34,12 @@
                 </div>
             </form>
 
+            <form method="POST" value="delete" action="{{ url_for('settings') }}">
                 <!-- Delete Account -->
                 <div class="form-group">
                     <button class="delete-button" name="delete" value="delete">Delete Account</button>
                 </div>
+            </form>
 
                 <div style="position: relative; width: 99%; border: solid black 1px; opacity: 0.5;">
                     {% for message in get_flashed_messages()%}
