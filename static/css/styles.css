@@ -56,3 +56,9 @@ main {
 .HomeButton:hover {
     background-color: gray;
 }
+
+.error-flash {
+    background-color: red;
+    opacity: 0.5;
+    border: black;
+}
