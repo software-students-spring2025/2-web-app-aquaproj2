@@ -2,10 +2,10 @@
 
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
-Members (Discord)
+Members
 - John Ma
 - Andrew Park
-- arkadiuz
+- Arkadiuz Mercado
 - nocmomor
 
 ## Product vision statement
