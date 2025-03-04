@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/friends.css') }}">
 </head>
 <body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <div class="container">
         <button class="HomeButton">
             <a href="{{ url_for('index') }}">Home</a>
@@ -14,10 +25,6 @@
         <header>
             <h1>Friends</h1>
         </header>
-        
-        <div class="message-container" style="display: none;">
-            <div class="message info">Example message</div>
-        </div>
         
         <div class="search-container">
             <form action="{{ url_for('friends_list') }}" method="GET">
@@ -27,32 +34,20 @@
         </div>
         
         <div class="friends-container">
-            <div class="friend-card">
-                <div class="friend-info">
-                    <h3>Alex Johnson</h3>
-                    <p>12 recipes</p>
-                    <span class="cuisine-tag">Italian</span>
-                </div>
-                <a href="{{ url_for('friend_profile', friend_id='1') }}" class="view-button">View</a>
-            </div>
-            
-            <div class="friend-card">
-                <div class="friend-info">
-                    <h3>Jamie Smith</h3>
-                    <p>8 recipes</p>
-                    <span class="cuisine-tag">Mexican</span>
-                </div>
-                <a href="{{ url_for('friend_profile', friend_id='2') }}" class="view-button">View</a>
-            </div>
-            
-            <div class="friend-card">
-                <div class="friend-info">
-                    <h3>Taylor Wilson</h3>
-                    <p>15 recipes</p>
-                    <span class="cuisine-tag">Indian</span>
-                </div>
-                <a href="{{ url_for('friend_profile', friend_id='3') }}" class="view-button">View</a>
-            </div>
+            {% if friends %}
+                {% for friend in friends %}
+                    <div class="friend-card">
+                        <div class="friend-info">
+                            <h3>{{ friend.username }}</h3>
+                            <p>{{ friend.recipe_count }} recipes</p>
+                            <span class="cuisine-tag">{{ friend.favoriteCuisine }}</span>
+                        </div>
+                        <a href="{{ url_for('friend_profile', friend_id=friend._id) }}" class="view-button">View</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-items">You're not following anyone yet!</p>
+            {% endif %}
         </div>
         
         <div class="add-friend-container">
@@ -67,21 +62,19 @@
             <div class="suggestion-container">
                 <h3>Suggested Friends</h3>
                 
-                <div class="friend-suggestion">
-                    <div class="friend-info">
-                        <h3>Casey Morgan</h3>
-                        <p>4 recipes</p>
-                    </div>
-                    <button type="submit" class="add-button">Add</button>
-                </div>
-                
-                <div class="friend-suggestion">
-                    <div class="friend-info">
-                        <h3>Riley Parker</h3>
-                        <p>9 recipes</p>
-                    </div>
-                    <button type="submit" class="add-button">Add</button>
-                </div>
+                {% if suggested_friends %}
+                    {% for sf in suggested_friends %}
+                        <div class="friend-suggestion">
+                            <div class="friend-info">
+                                <h3>{{ sf.username }}</h3>
+                                <p>{{ sf.recipe_count }} recipes</p>
+                            </div>
+                            <a href="{{ url_for('follow_friend', friend_id=sf._id) }}" class="add-button">Add</a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-items">No suggested friends available</p>
+                {% endif %}
             </div>
         </div>
     </div> 

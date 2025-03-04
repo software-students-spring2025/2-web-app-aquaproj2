@@ -4,6 +4,7 @@ import pymongo
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session, get_flashed_messages
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -50,10 +51,20 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    user_data = users.find_one({'_id': ObjectId(user_id)})
-    if user_data:
-        return User(user_data)
+    try:
+        user_data = users.find_one({'_id': ObjectId(user_id)})
+        if user_data:
+            return User(user_data)
+    except InvalidId:
+        pass
     return None
+
+# Helper function to safely convert string to ObjectId
+def safe_object_id(id_string):
+    try:
+        return ObjectId(id_string)
+    except (InvalidId, TypeError):
+        return None
 
 # Routes
 @app.route('/')
@@ -131,9 +142,9 @@ def profile():
     user_data = users.find_one({'_id': ObjectId(current_user.get_id())})
     
     # Get user's recipes
-    user_recipes = recipes.find({'user_id': ObjectId(current_user.get_id())})
+    user_recipes = list(recipes.find({'user_id': ObjectId(current_user.get_id())}))
     
-    return render_template('user/profile.html', user=user_data, recipes=list(user_recipes))
+    return render_template('user/profile.html', user=user_data, recipes=user_recipes)
 
 @app.route('/user/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -220,24 +231,31 @@ def editpage():
 @app.route('/recipe')
 @app.route('/recipe/<recipe_id>')
 def recipe(recipe_id=None):
+    recipe_data = None
+    author = None
+    
     if recipe_id:
-        # Get the specific recipe from database
-        recipe_data = recipes.find_one({'_id': ObjectId(recipe_id)})
-        if recipe_data:
-            # Get recipe author info
-            author = users.find_one({'_id': recipe_data.get('user_id')})
-            return render_template('recipe.html', recipe=recipe_data, author=author)
+        try:
+            obj_id = safe_object_id(recipe_id)
+            if obj_id:
+                # Get the specific recipe from database
+                recipe_data = recipes.find_one({'_id': obj_id})
+                if recipe_data:
+                    # Get recipe author info
+                    author = users.find_one({'_id': recipe_data.get('user_id')})
+        except Exception as e:
+            print(f"Error retrieving recipe: {e}")
     
     # Default recipe if no ID is provided or recipe not found
-    return render_template('recipe.html')
+    return render_template('recipe.html', recipe=recipe_data, author=author)
 
 @app.route('/recipe/add', methods=['GET', 'POST'])
 @login_required
 def add_recipe():
     if request.method == 'POST':
         name = request.form.get('name')
-        ingredients = request.form.get('ingredients').split(',')
-        instructions = request.form.get('instructions').split('\n')
+        ingredients = request.form.get('ingredients', '').split(',')
+        instructions = request.form.get('instructions', '').split('\n')
         recipe_type = request.form.get('recipe_type')  # 'sweet' or 'savory'
         cooking_time = request.form.get('cooking_time', '30')
         difficulty = request.form.get('difficulty', 'Intermediate')
@@ -245,8 +263,8 @@ def add_recipe():
         # Create new recipe
         new_recipe = {
             'name': name,
-            'ingredients': [ingredient.strip() for ingredient in ingredients],
-            'instructions': [instruction.strip() for instruction in instructions],
+            'ingredients': [ingredient.strip() for ingredient in ingredients if ingredient.strip()],
+            'instructions': [instruction.strip() for instruction in instructions if instruction.strip()],
             'type': recipe_type,
             'cooking_time': cooking_time,
             'difficulty': difficulty,
@@ -263,54 +281,72 @@ def add_recipe():
 @app.route('/recipe/edit/<recipe_id>', methods=['GET', 'POST'])
 @login_required
 def edit_recipe(recipe_id):
-    recipe_data = recipes.find_one({'_id': ObjectId(recipe_id)})
-    
-    # Check if recipe exists and belongs to current user
-    if not recipe_data or str(recipe_data.get('user_id')) != current_user.get_id():
-        flash('Recipe not found or you do not have permission to edit it!')
+    try:
+        obj_id = safe_object_id(recipe_id)
+        if not obj_id:
+            flash('Invalid recipe ID')
+            return redirect(url_for('editpage'))
+            
+        recipe_data = recipes.find_one({'_id': obj_id})
+        
+        # Check if recipe exists and belongs to current user
+        if not recipe_data or str(recipe_data.get('user_id')) != current_user.get_id():
+            flash('Recipe not found or you do not have permission to edit it!')
+            return redirect(url_for('editpage'))
+        
+        if request.method == 'POST':
+            name = request.form.get('name')
+            ingredients = request.form.get('ingredients', '').split(',')
+            instructions = request.form.get('instructions', '').split('\n')
+            recipe_type = request.form.get('recipe_type')
+            cooking_time = request.form.get('cooking_time')
+            difficulty = request.form.get('difficulty')
+            
+            # Update recipe
+            recipes.update_one(
+                {'_id': obj_id},
+                {'$set': {
+                    'name': name,
+                    'ingredients': [ingredient.strip() for ingredient in ingredients if ingredient.strip()],
+                    'instructions': [instruction.strip() for instruction in instructions if instruction.strip()],
+                    'type': recipe_type,
+                    'cooking_time': cooking_time,
+                    'difficulty': difficulty,
+                    'updated_at': datetime.datetime.now()
+                }}
+            )
+            
+            flash('Recipe updated successfully!')
+            return redirect(url_for('recipe', recipe_id=recipe_id))
+        
+        return render_template('edit_recipe.html', recipe=recipe_data)
+    except Exception as e:
+        flash(f'Error: {str(e)}')
         return redirect(url_for('editpage'))
-    
-    if request.method == 'POST':
-        name = request.form.get('name')
-        ingredients = request.form.get('ingredients').split(',')
-        instructions = request.form.get('instructions').split('\n')
-        recipe_type = request.form.get('recipe_type')
-        cooking_time = request.form.get('cooking_time')
-        difficulty = request.form.get('difficulty')
-        
-        # Update recipe
-        recipes.update_one(
-            {'_id': ObjectId(recipe_id)},
-            {'$set': {
-                'name': name,
-                'ingredients': [ingredient.strip() for ingredient in ingredients],
-                'instructions': [instruction.strip() for instruction in instructions],
-                'type': recipe_type,
-                'cooking_time': cooking_time,
-                'difficulty': difficulty,
-                'updated_at': datetime.datetime.now()
-            }}
-        )
-        
-        flash('Recipe updated successfully!')
-        return redirect(url_for('recipe', recipe_id=recipe_id))
-    
-    return render_template('edit_recipe.html', recipe=recipe_data)
 
 @app.route('/recipe/delete/<recipe_id>')
 @login_required
 def delete_recipe(recipe_id):
-    recipe_data = recipes.find_one({'_id': ObjectId(recipe_id)})
-    
-    # Check if recipe exists and belongs to current user
-    if not recipe_data or str(recipe_data.get('user_id')) != current_user.get_id():
-        flash('Recipe not found or you do not have permission to delete it!')
+    try:
+        obj_id = safe_object_id(recipe_id)
+        if not obj_id:
+            flash('Invalid recipe ID')
+            return redirect(url_for('editpage'))
+            
+        recipe_data = recipes.find_one({'_id': obj_id})
+        
+        # Check if recipe exists and belongs to current user
+        if not recipe_data or str(recipe_data.get('user_id')) != current_user.get_id():
+            flash('Recipe not found or you do not have permission to delete it!')
+            return redirect(url_for('editpage'))
+        
+        # Delete recipe
+        recipes.delete_one({'_id': obj_id})
+        flash('Recipe deleted successfully!')
         return redirect(url_for('editpage'))
-    
-    # Delete recipe
-    recipes.delete_one({'_id': ObjectId(recipe_id)})
-    flash('Recipe deleted successfully!')
-    return redirect(url_for('editpage'))
+    except Exception as e:
+        flash(f'Error: {str(e)}')
+        return redirect(url_for('editpage'))
 
 # Friends routes
 @app.route('/friends/friends-list')
@@ -347,69 +383,104 @@ def friends_list():
 
 @app.route('/friends/friend-profile/<friend_id>')
 @login_required
-def friend_profile(friend_id):
-    # Get friend data
-    friend = users.find_one({'_id': ObjectId(friend_id)})
-    if not friend:
-        flash('Friend not found!')
+def friend_profile(friend_id=None):
+    try:
+        # Try to convert friend_id to ObjectId
+        obj_id = safe_object_id(friend_id)
+        if not obj_id:
+            flash('Invalid friend ID')
+            return redirect(url_for('friends_list'))
+            
+        # Get friend data
+        friend = users.find_one({'_id': obj_id})
+        if not friend:
+            flash('Friend not found!')
+            return redirect(url_for('friends_list'))
+        
+        # Get friend's recipes
+        friend_recipes = list(recipes.find({'user_id': obj_id}))
+        
+        # Check if current user is following this friend
+        user_data = users.find_one({'_id': ObjectId(current_user.get_id())})
+        is_following = obj_id in [ObjectId(fid) for fid in user_data.get('following', [])]
+        
+        return render_template('friends/friend-profile.html', 
+                              friend=friend, 
+                              recipes=friend_recipes, 
+                              is_following=is_following)
+    except Exception as e:
+        flash(f'Error: {str(e)}')
         return redirect(url_for('friends_list'))
-    
-    # Get friend's recipes
-    friend_recipes = recipes.find({'user_id': ObjectId(friend_id)})
-    
-    # Check if current user is following this friend
-    user_data = users.find_one({'_id': ObjectId(current_user.get_id())})
-    is_following = ObjectId(friend_id) in [ObjectId(fid) for fid in user_data.get('following', [])]
-    
-    return render_template('friends/friend-profile.html', 
-                          friend=friend, 
-                          recipes=list(friend_recipes), 
-                          is_following=is_following)
 
 @app.route('/friends/follow/<friend_id>')
 @login_required
 def follow_friend(friend_id):
-    # Update current user's following list
-    users.update_one(
-        {'_id': ObjectId(current_user.get_id())},
-        {'$addToSet': {'following': ObjectId(friend_id)}}
-    )
-    
-    # Update friend's followers list
-    users.update_one(
-        {'_id': ObjectId(friend_id)},
-        {'$addToSet': {'followers': ObjectId(current_user.get_id())}}
-    )
-    
-    flash('You are now following this user!')
-    return redirect(url_for('friend_profile', friend_id=friend_id))
+    try:
+        obj_id = safe_object_id(friend_id)
+        if not obj_id:
+            flash('Invalid friend ID')
+            return redirect(url_for('friends_list'))
+            
+        # Update current user's following list
+        users.update_one(
+            {'_id': ObjectId(current_user.get_id())},
+            {'$addToSet': {'following': obj_id}}
+        )
+        
+        # Update friend's followers list
+        users.update_one(
+            {'_id': obj_id},
+            {'$addToSet': {'followers': ObjectId(current_user.get_id())}}
+        )
+        
+        flash('You are now following this user!')
+        return redirect(url_for('friend_profile', friend_id=friend_id))
+    except Exception as e:
+        flash(f'Error: {str(e)}')
+        return redirect(url_for('friends_list'))
 
 @app.route('/friends/unfollow/<friend_id>')
 @login_required
 def unfollow_friend(friend_id):
-    # Remove from current user's following list
-    users.update_one(
-        {'_id': ObjectId(current_user.get_id())},
-        {'$pull': {'following': ObjectId(friend_id)}}
-    )
-    
-    # Remove from friend's followers list
-    users.update_one(
-        {'_id': ObjectId(friend_id)},
-        {'$pull': {'followers': ObjectId(current_user.get_id())}}
-    )
-    
-    flash('You have unfollowed this user!')
-    return redirect(url_for('friend_profile', friend_id=friend_id))
+    try:
+        obj_id = safe_object_id(friend_id)
+        if not obj_id:
+            flash('Invalid friend ID')
+            return redirect(url_for('friends_list'))
+            
+        # Remove from current user's following list
+        users.update_one(
+            {'_id': ObjectId(current_user.get_id())},
+            {'$pull': {'following': obj_id}}
+        )
+        
+        # Remove from friend's followers list
+        users.update_one(
+            {'_id': obj_id},
+            {'$pull': {'followers': ObjectId(current_user.get_id())}}
+        )
+        
+        flash('You have unfollowed this user!')
+        return redirect(url_for('friend_profile', friend_id=friend_id))
+    except Exception as e:
+        flash(f'Error: {str(e)}')
+        return redirect(url_for('friends_list'))
 
 @app.route('/friends/friendsrecipe/<recipe_id>')
 def friendsrecipe(recipe_id):
-    # Get the specific recipe from database
-    recipe_data = recipes.find_one({'_id': ObjectId(recipe_id)})
-    if recipe_data:
-        # Get recipe author info
-        author = users.find_one({'_id': recipe_data.get('user_id')})
-        return render_template('friends/friendsrecipe.html', recipe=recipe_data, author=author)
+    try:
+        obj_id = safe_object_id(recipe_id)
+        if not obj_id:
+            return render_template('friends/friendsrecipe.html')
+            
+        # Get the specific recipe from database
+        recipe_data = recipes.find_one({'_id': obj_id})
+        if recipe_data:
+            # Get recipe author info
+            author = users.find_one({'_id': recipe_data.get('user_id')})
+            return render_template('friends/friendsrecipe.html', recipe=recipe_data, author=author)
+    except Exception as e:
+        print(f"Error retrieving recipe: {e}")
     
     # Default recipe if not found
     return render_template('friends/friendsrecipe.html')
