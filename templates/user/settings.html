@@ -15,22 +15,36 @@
     <div class="container">
         <div class="auth-container">
             <h2>Account Settings</h2>
-            <!-- Change Username -->
-            <div class="form-group">
-                <label for="username">Change Username</label>
-                <input type="text" id="username" placeholder="Enter new username">
-                <button class="submit-button">Update Username</button>
-            </div>
-            <!-- Change Password -->
-            <div class="form-group">
-                <label for="password">Change Password</label>
-                <input type="password" id="password" placeholder="Enter new password">
-                <button class="submit-button">Update Password</button>
-            </div>
-            <!-- Delete Account -->
-            <div class="form-group">
-                <button class="delete-button">Delete Account</button>
-            </div>
+
+            <form method="POST" value="email" action="{{ url_for('settings') }}">
+                <!-- Change Username -->
+                <div class="form-group">
+                    <label for="email">Change Email</label>
+                    <input type="text" id="email" name="email" placeholder="Enter new email">
+                    <button class="submit-button" value="email">Update Email</button>
+                </div>
+            </form>
+
+            <form method="POST" value="password" action="{{ url_for('settings') }}">
+                <!-- Change Password -->
+                <div class="form-group">
+                    <label for="password">Change Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter new password">
+                    <button class="submit-button" value="password">Update Password</button>
+                </div>
+            </form>
+
+                <!-- Delete Account -->
+                <div class="form-group">
+                    <button class="delete-button" name="delete" value="delete">Delete Account</button>
+                </div>
+
+                <div style="position: relative; width: 99%; border: solid black 1px; opacity: 0.5;">
+                    {% for message in get_flashed_messages()%}
+                        <p style="color: black; padding: 1%;">{{ message }}</p>
+                    {% endfor %}
+                </div>
+
         </div>
     </div>
 </body>
