@@ -2,6 +2,12 @@
 
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
+Members (Discord)
+- John Ma
+- Andrew Park
+- arkadiuz
+- nocmomor
+
 ## Product vision statement
 
 RecipeShare is a mobile-friendly social platform that empowers home cooks to discover, share, and personalize recipes based on cuisine types and dietary preferences.
