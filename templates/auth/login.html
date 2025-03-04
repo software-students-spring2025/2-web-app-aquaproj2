@@ -27,6 +27,13 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
+
+            <div style="position: relative; width: 99%; border: solid black 1px; opacity: 0.5;">
+                {% for message in get_flashed_messages()%}
+                    <p style="color: black; padding: 1%;">{{ message }}</p>
+                {% endfor %}
+            </div>
+
             <button type="submit" class="submit-button">Log In</button>
         </form>
         <p class="auth-link">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>

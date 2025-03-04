@@ -43,16 +43,13 @@ login_manager.login_view = 'login'
 
 # User class for Flask-Login
 class User(UserMixin):
-    def __init__(self, user_data):
-        self.id = str(user_data['_id'])
-        self.username = user_data['username']
-        self.email = user_data['email']
-        self.favorite_cuisine = user_data.get('favorite_cuisine')
-        self.cooking_skill = user_data.get('cooking_skill')
-        self.bio = user_data.get('bio', '')
+    def __init__(self, user_doc):
+        self.user_doc = user_doc
 
     def get_id(self):
-        return self.id
+        user_id = str(self.user_doc.get('_id'))
+        return user_id
+        
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -70,57 +67,66 @@ def index():
 @app.route('/auth/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email').lower()
         password = request.form.get('password')
         
         # Validing login credentials
-        login_user = users.find_one({'email': email, 'password': password})
-        if users.find_one({'email': email, 'password': password}):
-            return redirect(url_for('index'), current_user = login_user)
-        
+        cur_user = users.find_one({'email': email, 'password': password})
+        if cur_user and cur_user['password'] == password:
+            login_user(User(cur_user))
+            return redirect(url_for('index'))
+        else:
+            flash("Incorrect username or password, please try again!")
+            return redirect(url_for('login'))
     return render_template('auth/login.html')
 
 @app.route('/auth/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         # Process registration form
-        username = request.form['username']
-        email = request.form['email']
+        username = request.form['username'].lower()
+        email = request.form['email'].lower()
         password = request.form['password']
-        confirm_password = request.form['confirm-password']
-        cooking_level = request.form['cooking-level']
-        favorite_cuisine = request.form['favorite-cuisine']
+        confirm_password = request.form['confirm_password']
+        cooking_level = request.form['cooking_skill']
+        favorite_cuisine = request.form['favorite_cuisine']
 
-        if password != confirm_password and len(password) >= 8:
-            ##Needs to display an error message
-            pass
+        if password != confirm_password:
+            ##Displaying error
+            flash("Error: Passwords do not match!")
+            return redirect(url_for('register'))
+        elif len(password) < 8:
+            flash("Error: Password must be greater than length 8")
+            return redirect(url_for('register'))
         elif users.find_one({"username": username} or {"email": email}):
-            ##Needs to display an error message
-            pass
+            flash("Error: Username or email already taken!")
+            return redirect(url_for('register'))
         else:
-            ##Creating Users
-            if favorite_cuisine:
-                users.insert_one({'username': username, 'email': email, 'password': password,
-                                 'cookingLevel': cooking_level, 'favoriteCuisine': favorite_cuisine})
-            else:
-                users.insert_one({'username': username, 'email': email, 'password': password,
-                                 'cookingLevel': cooking_level})
-            return redirect(url_for('login'), current_user = User(users.find_one({'username': username})))
+            ##Creating User
+            users.insert_one({'username': username, 'email': email, 'password': password,
+                                 'cookingLevel': cooking_level, 'favoriteCuisine': favorite_cuisine, 'bio': ""})
+
+        flash("Account successfully created! Please Log-In")
+        return redirect(url_for('login'))
     
     return render_template('auth/register.html')
 
 @app.route('/logout')
+@login_required
 def logout():
-    # In a real implementation, this would log the user out
+    ##Logging out user from flask-login
+    logout_user()
     return redirect(url_for('login'))
 
 # User profile routes
 @app.route('/user/profile')
+@login_required
 def profile():
     # User profile page
     return render_template('user/profile.html')
 
 @app.route('/user/edit-profile', methods=['GET', 'POST'])
+@login_required
 def edit_profile(current_user):
     if request.method == 'POST':
         # Process form submission
@@ -143,11 +149,13 @@ def edit_profile(current_user):
     return render_template('user/edit-profile.html')
 
 @app.route('/user/settings', methods=['GET', 'POST'])
+@login_required
 def settings():
     return render_template('user/settings.html')
 
 # Recipe routes
 @app.route('/editpage')
+@login_required
 def editpage():
     # Recipe editing page
     return render_template('editpage.html')
@@ -162,6 +170,7 @@ def recipe(recipe_id=None):
 
 # Friends routes
 @app.route('/friends/friends-list')
+@login_required
 def friends_list():
     # Friends list page
     return render_template('friends/friends-list.html')
