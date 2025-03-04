@@ -2,11 +2,11 @@
 
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
-Members
-- John Ma
-- Andrew Park
-- Arkadiuz Mercado
-- nocmomor
+## Team Members
+- [John Ma](https://github.com/j4ma)
+- [Andrew Park](https://github.com/Toudles)
+- [Arkadiuz Mercado](https://github.com/ArionM27)
+- [Cyryl Zhang](https://github.com/nstraightbeam)
 
 ## Product vision statement
 
