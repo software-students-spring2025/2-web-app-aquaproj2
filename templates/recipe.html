@@ -3,39 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe - Hazelnut Ice Cream </title>
+    <title>Recipe - {{ recipe.name if recipe else "Hazelnut Ice Cream" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/recipes.css') }}">
     <!--For Like and Share Icons-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <header>
         <h1>Recipe Share</h1>
+        <a href="{{ url_for('editpage') }}" class="back-button">← My Recipes</a>
     </header>
     <div style="border: 1px solid black;">
-        <p class="recipe-name">Hazelnut Ice Cream<p>
+        <p class="recipe-name">{{ recipe.name if recipe else "Hazelnut Ice Cream" }}<p>
         <div class="image">
             <img src="{{ url_for('static', filename='images/recipe.jpg') }}" alt="image">
         </div>
         <div>
             <button class="int-button">Like</button>
             <button class="int-button">Share</button>
+            {% if current_user.is_authenticated and recipe and current_user.get_id() == recipe.user_id|string %}
             <button class="int-button">
-                <a href="#">Edit</a>
+                <a href="{{ url_for('edit_recipe', recipe_id=recipe._id) }}">Edit</a>
             </button>
+            <button class="int-button">
+                <a href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}" onclick="return confirm('Are you sure you want to delete this recipe?')">Delete</a>
+            </button>
+            {% endif %}
         </div>
         <div class="ingredients-list">
-            <p>Hazelnut, Heavy Cream, Sugar, Ice, Vanilla</p>
+            <p>{% if recipe and recipe.ingredients %}{{ recipe.ingredients|join(', ') }}{% else %}Hazelnut, Heavy Cream, Sugar, Ice, Vanilla{% endif %}</p>
         </div>
         <div class="instructions-list">
             <ol>
-                <li class="center">Chop up Hazelnuts</li>
-                <li class="center">Mix Sugar and Heavy Cream in Bowl</li>
-                <li class="center">Blend with Ice in Batches</li>
-                <li class="center">Add in Hazelnuts</li>
-                
+                {% if recipe and recipe.instructions %}
+                    {% for step in recipe.instructions %}
+                        <li class="center">{{ step }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li class="center">Chop up Hazelnuts</li>
+                    <li class="center">Mix Sugar and Heavy Cream in Bowl</li>
+                    <li class="center">Blend with Ice in Batches</li>
+                    <li class="center">Add in Hazelnuts</li>
+                {% endif %}
             </ol>
         </div>
+        
+        {% if recipe %}
+        <div class="recipe-meta">
+            <p class="cooking-time">Cooking Time: {{ recipe.cooking_time }} mins</p>
+            <p class="difficulty">Difficulty: {{ recipe.difficulty }}</p>
+            {% if author %}
+            <p class="author">By: {{ author.username }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
