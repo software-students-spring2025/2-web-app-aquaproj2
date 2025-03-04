@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friend Profile - RecipeShare</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/userfriends.css') }}">
-    
 </head>
 <body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <button class="back-button">
         <a href="{{ url_for('friends_list') }}">Friends</a>
     </button>
@@ -16,87 +26,66 @@
         <h1>Friend Profile</h1>
     </header>
     
-    
     <div class="profile-container">
         <div class="profile-header">
-            <div class="profile-image">
-                
-            </div>
-            <h2 class="profile-name">Alex Johnson</h2>
-            <p class="profile-bio">Passionate about baking and Italian cuisine.</p>
+            <div class="profile-image"></div>
+            <h2 class="profile-name">{{ friend.username if friend else "Friend" }}</h2>
+            <p class="profile-bio">{{ friend.bio if friend and friend.bio else "No bio available" }}</p>
             
             <div class="profile-stats">
                 <div class="stat">
-                    <span class="stat-value">12</span>
+                    <span class="stat-value">{{ recipes|length if recipes else 0 }}</span>
                     <span class="stat-label">Recipes</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">Italian</span>
+                    <span class="stat-value">{{ friend.favoriteCuisine if friend and friend.favoriteCuisine else "Unknown" }}</span>
                     <span class="stat-label">Favorite Cuisine</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">Intermediate</span>
+                    <span class="stat-value">{{ friend.cookingLevel if friend and friend.cookingLevel else "Unknown" }}</span>
                     <span class="stat-label">Skill Level</span>
                 </div>
             </div>
             
-            <form action="{{ url_for('friend_profile', friend_id='1') }}" method="POST">
-                <input type="hidden" name="user_id" value="1">
-                <button type="submit" class="follow-button following">Following</button>
-            </form>
-            <div class="follow-container">
-                <button class="followers">Followers:</button>
-                <button class="following-btn">Following:</button>
-            </div>
+            {% if friend %}
+                {% if is_following %}
+                    <a href="{{ url_for('unfollow_friend', friend_id=friend._id) }}" class="follow-button following">Unfollow</a>
+                {% else %}
+                    <a href="{{ url_for('follow_friend', friend_id=friend._id) }}" class="follow-button">Follow</a>
+                {% endif %}
+            {% endif %}
             
+            <div class="follow-container">
+                <button class="followers">Followers: {{ friend.followers|length if friend and friend.followers else 0 }}</button>
+                <button class="following-btn">Following: {{ friend.following|length if friend and friend.following else 0 }}</button>
+            </div>
         </div>
-        
-        
     </div>
+    
     <div class="profile-tabs">
-        <a href="#" class="profile-tab active" id="my-recipes-tab">My Recipes</a>
+        <a href="#" class="profile-tab active" id="my-recipes-tab">Recipes</a>
     </div>
-    <!-- My Recipes Section -->
+    
+    <!-- Recipes Section -->
     <div class="tab-content" id="my-recipes-content">
         <div class="recipe-container">
-            <div class="recipe-card">
-                <div class="recipe-info">
-                    <button class="RecipeButton">
-                        <h3><a href="{{ url_for('recipe', recipe_id='hazelnuticecream') }}">Hazelnut Ice Cream</a></h3>
-                    </button>
-        
-                    <div id="hazelnuticecream" class="popup">
-                        <div class="popup-content">
-                            <a href="#" class="close">&times;</a>
-                            <h2>Hazelnut Ice Cream</h2>
-                            <iframe src="{{ url_for('recipe') }}"></iframe>
+            {% if recipes %}
+                {% for recipe in recipes %}
+                    <div class="recipe-card">
+                        <div class="recipe-info">
+                            <button class="RecipeButton">
+                                <h3><a href="{{ url_for('recipe', recipe_id=recipe._id) }}">{{ recipe.name }}</a></h3>
+                            </button>
+                            <div class="recipe-meta">
+                                <span class="time">{{ recipe.cooking_time }} mins</span>
+                                <span class="difficulty">{{ recipe.difficulty }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="recipe-meta">
-                        <span class="time">60 mins</span>
-                        <span class="difficulty">Intermediate</span>
-                    </div>
-                </div>
-            </div>
-            <div class="recipe-card">
-                <div class="recipe-info">
-                    <button class="RecipeButton">
-                        <h3><a href="{{ url_for('recipe', recipe_id='hazelnuticecream2') }}">Hazelnut Ice Cream</a></h3>
-                    </button>
-        
-                    <div id="hazelnuticecream2" class="popup">
-                        <div class="popup-content">
-                            <a href="#" class="close">&times;</a>
-                            <h2>Hazelnut Ice Cream</h2>
-                            <iframe src="{{ url_for('recipe') }}"></iframe>
-                        </div>
-                    </div>
-                    <div class="recipe-meta">
-                        <span class="time">30 mins</span>
-                        <span class="difficulty">Easy</span>
-                    </div>
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-items">No recipes to display</p>
+            {% endif %}
         </div>
     </div>
 </body>
