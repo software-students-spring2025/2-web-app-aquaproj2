@@ -30,8 +30,11 @@ except Exception as e:
 
 # Initialize database and collections
 db = client.recipeshare
-users_collection = db.users
-recipes_collection = db.recipes
+users = db.users
+recipes = db.recipes
+##Storing current user
+current_user = None
+current_recipe = None
 
 # Initialize login manager
 login_manager = LoginManager()
@@ -53,7 +56,7 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    user_data = users_collection.find_one({'_id': ObjectId(user_id)})
+    user_data = users.find_one({'_id': ObjectId(user_id)})
     if user_data:
         return User(user_data)
     return None
@@ -70,18 +73,39 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # For now, just redirect to index
-        # In a real implementation, you would validate credentials
-        return redirect(url_for('index'))
-    
+        # Validing login credentials
+        login_user = users.find_one({'email': email, 'password': password})
+        if users.find_one({'email': email, 'password': password}):
+            return redirect(url_for('index'), current_user = login_user)
+        
     return render_template('auth/login.html')
 
 @app.route('/auth/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         # Process registration form
-        # In a real implementation, you would save user data
-        return redirect(url_for('login'))
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm-password']
+        cooking_level = request.form['cooking-level']
+        favorite_cuisine = request.form['favorite-cuisine']
+
+        if password != confirm_password and len(password) >= 8:
+            ##Needs to display an error message
+            pass
+        elif users.find_one({"username": username} or {"email": email}):
+            ##Needs to display an error message
+            pass
+        else:
+            ##Creating Users
+            if favorite_cuisine:
+                users.insert_one({'username': username, 'email': email, 'password': password,
+                                 'cookingLevel': cooking_level, 'favoriteCuisine': favorite_cuisine})
+            else:
+                users.insert_one({'username': username, 'email': email, 'password': password,
+                                 'cookingLevel': cooking_level})
+            return redirect(url_for('login'), current_user = User(users.find_one({'username': username})))
     
     return render_template('auth/register.html')
 
@@ -97,9 +121,23 @@ def profile():
     return render_template('user/profile.html')
 
 @app.route('/user/edit-profile', methods=['GET', 'POST'])
-def edit_profile():
+def edit_profile(current_user):
     if request.method == 'POST':
         # Process form submission
+        req_user = request.form['username'] 
+        req_pass = request.form['password'] 
+
+        ##Update username as long as it does not exist
+        if req_user and not users.find_one({"username": req_user}):
+            ##Might need to display some kind of error message here
+            current_user['username'] = req_user
+            users.update_one({'_id': current_user['_id']}, {"$set": { 'username':  req_user}})
+
+        ##Update password
+        if req_pass and len(req_pass) >= 8:
+            current_user['password'] = req_pass
+            users.update_one({'_id': current_user['_id']}, {"$set": { 'password':  req_pass}})
+
         return redirect(url_for('profile'))
     
     return render_template('user/edit-profile.html')
