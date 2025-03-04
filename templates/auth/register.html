@@ -61,6 +61,12 @@
                     <option value="professional">Professional</option>
                 </select>
             </div>
+
+            <div style="position: relative; width: 99%; background-color: red; opacity: 0.5;">
+                {% for message in get_flashed_messages()%}
+                    <p style="color: black; padding: 1%;">{{ message }}</p>
+                {% endfor %}
+            </div>
             
             <button type="submit" class="submit-button">Create Account</button>
         </form>
