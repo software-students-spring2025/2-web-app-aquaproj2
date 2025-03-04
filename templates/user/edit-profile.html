@@ -12,46 +12,53 @@
         <h1>Edit Profile</h1>
     </header>
     
-    <div class="message-container" style="display: none;">
-        <div class="message info">Example message</div>
-    </div>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     
     <div class="container">
-        <form id="edit-profile-form" class="profile-form" method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+        <form id="edit-profile-form" class="profile-form" method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="Username" required>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
             </div>
             
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="user@example.com" required>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
             </div>
             
             <div class="form-group">
                 <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" rows="4">Food enthusiast who loves experimenting with new flavors.</textarea>
+                <textarea id="bio" name="bio" rows="4">{{ user.bio }}</textarea>
             </div>
             
             <div class="form-group">
                 <label for="favorite-cuisine">Favorite Cuisine</label>
                 <select id="favorite-cuisine" name="favorite_cuisine">
                     <option value="">Select a cuisine</option>
-                    <option value="italian" selected>Italian</option>
-                    <option value="mexican">Mexican</option>
-                    <option value="indian">Indian</option>
-                    <option value="chinese">Chinese</option>
-                    <option value="american">American</option>
+                    <option value="italian" {% if user.favoriteCuisine == 'italian' %}selected{% endif %}>Italian</option>
+                    <option value="mexican" {% if user.favoriteCuisine == 'mexican' %}selected{% endif %}>Mexican</option>
+                    <option value="indian" {% if user.favoriteCuisine == 'indian' %}selected{% endif %}>Indian</option>
+                    <option value="chinese" {% if user.favoriteCuisine == 'chinese' %}selected{% endif %}>Chinese</option>
+                    <option value="american" {% if user.favoriteCuisine == 'american' %}selected{% endif %}>American</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="cooking-skill">Cooking Skill Level</label>
                 <select id="cooking-skill" name="cooking_skill">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate" selected>Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="professional">Professional</option>
+                    <option value="beginner" {% if user.cookingLevel == 'beginner' %}selected{% endif %}>Beginner</option>
+                    <option value="intermediate" {% if user.cookingLevel == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                    <option value="advanced" {% if user.cookingLevel == 'advanced' %}selected{% endif %}>Advanced</option>
+                    <option value="professional" {% if user.cookingLevel == 'professional' %}selected{% endif %}>Professional</option>
                 </select>
             </div>
             
