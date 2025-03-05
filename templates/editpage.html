@@ -7,72 +7,116 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/editpage.css') }}">
 </head>
 <body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message-container">
+          {% for message in messages %}
+            <div class="message info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <button class="HomeButton">
         <a href="{{ url_for('index') }}">Home</a>
     </button>
     
     <!-- Sweets Section -->
-    <!-- Specify details that the user can open and close on demand: Source: W3Schools
-    <summary> is the clickable part that allows us to expand the contents of <details> -->
-    <details class="TypeofRecipe">
+    <details class="TypeofRecipe" open>
         <summary class="ClickableCategory">Sweets</summary>
         <div class="SpecificRecipes">
-            
-            <button class="RecipeButton">
-                <a href="{{ url_for('recipe', recipe_id='hazelnuticecream') }}">Hazelnut Ice Cream</a>
-            </button>
-            <div id="hazelnuticecream" class="popup">
-                <div class="popup-content">
-                    <a href="#" class="close">&times;</a>
-                    <h2>Hazelnut Ice Cream</h2>
-                    <iframe src="{{ url_for('recipe') }}"></iframe>
-                </div>
-            </div>
-            <button class="RecipeButton">Cheesecake</button>
-            <a href="#AddNewSweet" class="AddRecipe"> Add Recipe</a>  <!-- href # to link to another seciton on same page: Source: W3Schools-->
+            {% if sweet_recipes %}
+                {% for recipe in sweet_recipes %}
+                    <button class="RecipeButton">
+                        <a href="{{ url_for('recipe', recipe_id=recipe._id) }}">{{ recipe.name }}</a>
+                    </button>
+                {% endfor %}
+            {% else %}
+                <p>No sweet recipes yet</p>
+            {% endif %}
+            <a href="#AddNewSweet" class="AddRecipe">Add Recipe</a>
         </div>
     </details>
+
     <!-- Savory Section -->
-    <details class="TypeofRecipe">
+    <details class="TypeofRecipe" open>
         <summary class="ClickableCategory">Savory</summary>
         <div class="SpecificRecipes">
-            <button class="RecipeButton">Mac and Cheese</button>
-            <button class="RecipeButton">Lamb Chops</button>
-            <a href="#AddNewSavory" class="AddRecipe"> Add Recipe</a>  
+            {% if savory_recipes %}
+                {% for recipe in savory_recipes %}
+                    <button class="RecipeButton">
+                        <a href="{{ url_for('recipe', recipe_id=recipe._id) }}">{{ recipe.name }}</a>
+                    </button>
+                {% endfor %}
+            {% else %}
+                <p>No savory recipes yet</p>
+            {% endif %}
+            <a href="#AddNewSavory" class="AddRecipe">Add Recipe</a>
         </div>
     </details>
+
     <!-- Form for adding new recipe (Sweet) -->
     <div id="AddNewSweet" class="form">
         <div class="FormContent">
             <h2>New Recipe (Sweets)</h2>
-            <label>Name:</label>
-            <input type="text" placeholder="Enter recipe name">
-            
-            <label>Ingredients:</label>
-            <input type="text" placeholder="Ingredient 1">
-            <input type="text" placeholder="Ingredient 2">
-            <input type="text" placeholder="Ingredient 3">
-            <label>Instructions:</label>
-            <textarea type="Enter instructions"></textarea>
-            <a href="#" class="SaveButton">Save</a>
-            <a href="#" class="CloseButton">Cancel</a> 
+            <form method="POST" action="{{ url_for('add_recipe') }}">
+                <input type="hidden" name="recipe_type" value="sweet">
+                
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter recipe name" required>
+                
+                <label for="ingredients">Ingredients:</label>
+                <input type="text" id="ingredients" name="ingredients" placeholder="Ingredient 1, Ingredient 2, Ingredient 3" required>
+                
+                <label for="instructions">Instructions:</label>
+                <textarea id="instructions" name="instructions" placeholder="Enter instructions" required></textarea>
+                
+                <label for="cooking_time">Cooking Time (mins):</label>
+                <input type="number" id="cooking_time" name="cooking_time" value="30">
+                
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty" name="difficulty">
+                    <option value="Easy">Easy</option>
+                    <option value="Intermediate" selected>Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+                
+                <button type="submit" class="SaveButton">Save</button>
+                <a href="#" class="CloseButton">Cancel</a>
+            </form>
         </div>
     </div>
+
     <!-- Form for adding new recipe (Savory) -->
     <div id="AddNewSavory" class="form">
         <div class="FormContent">
             <h2>New Recipe (Savory)</h2>
-            <label>Name:</label>
-            <input type="text" placeholder="Enter recipe name">
-            
-            <label>Ingredients:</label>
-            <input type="text" placeholder="Ingredient 1">
-            <input type="text" placeholder="Ingredient 2">
-            <input type="text" placeholder="Ingredient 3">
-            <label>Instructions:</label>
-            <textarea type="Enter instructions"></textarea>
-            <a href="#" class="SaveButton">Save</a>
-            <a href="#" class="CloseButton">Cancel</a> 
+            <form method="POST" action="{{ url_for('add_recipe') }}">
+                <input type="hidden" name="recipe_type" value="savory">
+                
+                <label for="name_savory">Name:</label>
+                <input type="text" id="name_savory" name="name" placeholder="Enter recipe name" required>
+                
+                <label for="ingredients_savory">Ingredients:</label>
+                <input type="text" id="ingredients_savory" name="ingredients" placeholder="Ingredient 1, Ingredient 2, Ingredient 3" required>
+                
+                <label for="instructions_savory">Instructions:</label>
+                <textarea id="instructions_savory" name="instructions" placeholder="Enter instructions" required></textarea>
+                
+                <label for="cooking_time_savory">Cooking Time (mins):</label>
+                <input type="number" id="cooking_time_savory" name="cooking_time" value="30">
+                
+                <label for="difficulty_savory">Difficulty:</label>
+                <select id="difficulty_savory" name="difficulty">
+                    <option value="Easy">Easy</option>
+                    <option value="Intermediate" selected>Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+                
+                <button type="submit" class="SaveButton">Save</button>
+                <a href="#" class="CloseButton">Cancel</a>
+            </form>
         </div>
     </div>
 </body>
