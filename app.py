@@ -352,6 +352,9 @@ def delete_recipe(recipe_id):
 @app.route('/friends/friends-list')
 @login_required
 def friends_list():
+    # Get search query if any
+    search_query = request.args.get('q', '')
+    
     # Get current user data
     user_data = users.find_one({'_id': ObjectId(current_user.get_id())})
     following_ids = user_data.get('following', [])
@@ -361,16 +364,31 @@ def friends_list():
     for friend_id in following_ids:
         friend = users.find_one({'_id': ObjectId(friend_id)})
         if friend:
+            # Filter by search query if provided
+            if search_query and search_query.lower() not in friend['username'].lower():
+                continue
+                
             friend_recipe_count = recipes.count_documents({'user_id': ObjectId(friend_id)})
             friend['recipe_count'] = friend_recipe_count
             friends.append(friend)
     
     # Get suggested friends (users not being followed)
     suggested_friends = []
-    potential_friends = users.find({
-        '_id': {'$ne': ObjectId(current_user.get_id())},
-        '_id': {'$nin': [ObjectId(fid) for fid in following_ids]}
-    }).limit(5)
+    
+    # Base query to find users not being followed
+    query_conditions = [
+        {'_id': {'$ne': ObjectId(current_user.get_id())}},
+        {'_id': {'$nin': [ObjectId(fid) for fid in following_ids]}}
+    ]
+    
+    # Add search query to filter if provided
+    if search_query:
+        query_conditions.append({'username': {'$regex': search_query, '$options': 'i'}})
+    
+    # Combine all conditions
+    query = {'$and': query_conditions}
+    
+    potential_friends = users.find(query).limit(5)
     
     for pf in potential_friends:
         recipe_count = recipes.count_documents({'user_id': pf['_id']})
@@ -379,7 +397,8 @@ def friends_list():
     
     return render_template('friends/friends-list.html', 
                           friends=friends, 
-                          suggested_friends=suggested_friends)
+                          suggested_friends=suggested_friends,
+                          search_query=search_query)
 
 @app.route('/friends/friend-profile/<friend_id>')
 @login_required

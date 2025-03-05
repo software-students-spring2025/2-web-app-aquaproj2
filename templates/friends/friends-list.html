@@ -28,7 +28,8 @@
         
         <div class="search-container">
             <form action="{{ url_for('friends_list') }}" method="GET">
-                <input type="text" id="friend-search" name="q" placeholder="Search friends..." class="search-input">
+                <input type="text" id="friend-search" name="q" placeholder="Search friends..." 
+                       class="search-input" value="{{ search_query if search_query else '' }}">
                 <button type="submit" class="search-button">Search</button>
             </form>
         </div>
@@ -46,7 +47,11 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="no-items">You're not following anyone yet!</p>
+                {% if search_query %}
+                    <p class="no-items">No friends found matching "{{ search_query }}"</p>
+                {% else %}
+                    <p class="no-items">You're not following anyone yet!</p>
+                {% endif %}
             {% endif %}
         </div>
         
@@ -54,13 +59,14 @@
             <h2>Add Friends</h2>
             <div class="search-container">
                 <form action="{{ url_for('friends_list') }}" method="GET">
-                    <input type="text" name="q" placeholder="Search by username or email" class="search-input">
+                    <input type="text" name="q" placeholder="Search by username or email" 
+                           class="search-input" value="{{ search_query if search_query else '' }}">
                     <button type="submit" class="search-button">Search</button>
                 </form>
             </div>
             
             <div class="suggestion-container">
-                <h3>Suggested Friends</h3>
+                <h3>{% if search_query %}Search Results{% else %}Suggested Friends{% endif %}</h3>
                 
                 {% if suggested_friends %}
                     {% for sf in suggested_friends %}
@@ -73,7 +79,11 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p class="no-items">No suggested friends available</p>
+                    {% if search_query %}
+                        <p class="no-items">No users found matching "{{ search_query }}"</p>
+                    {% else %}
+                        <p class="no-items">No suggested friends available</p>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
