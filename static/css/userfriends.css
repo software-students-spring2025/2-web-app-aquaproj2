@@ -425,11 +425,17 @@ header h1 {
     left: 15px;
     background-color: lightgray;
     color: black;
+    border: none;
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 5px;
     font-size: 16px;
     z-index: 999; /* Ensures it appears above other elements */
+}
+
+.back-button a {
+    text-decoration: none;
+    color: black;
 }
 
 .back-button:hover {
@@ -438,7 +444,7 @@ header h1 {
 
 
 .follow-container {
-    display: flex;
+    display: block;
     flex-direction: column;
     align-items: center; 
     gap: 5px; 
@@ -462,10 +468,12 @@ header h1 {
     text-decoration: none;
     padding: 10px;
     margin-top: 15px;
-    width: 10%;
+    width: 25%;
     border-radius: 5px;
     font-size: 16px;
     text-align: center;
+    margin-right: 5px;
+    border-style: none;
 }
 
 

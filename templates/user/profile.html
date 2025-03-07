@@ -19,14 +19,16 @@
     {% endwith %}
 
     <header>
-        <a href="{{ url_for('index') }}" class="back-button">← Home</a>
-        <h1>My Profile</h1>
-        <a href="{{ url_for('edit_profile') }}" class="edit-profile-button">Edit Profile</a>
+        <div class="my-recipe-header">
+            <a href="{{ url_for('index') }}" class="back-button">Home</a>
+            <h1>My Profile</h1>
+            <a href="{{ url_for('edit_profile') }}" class="edit-profile-button">Edit Profile</a>
+        </div>
     </header>
     
     <div class="profile-container">
         <div class="profile-header">
-            <div class="profile-image"></div>
+            <div class="profile-image"> <img src={{user.image}} alt="Image"></div>
             <h2 class="profile-name">{{ user.username }}</h2>
             <p class="profile-bio">{{ user.bio if user.bio else "No bio added yet." }}</p>
             
