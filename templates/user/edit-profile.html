@@ -61,6 +61,11 @@
                     <option value="professional" {% if user.cookingLevel == 'professional' %}selected{% endif %}>Professional</option>
                 </select>
             </div>
+
+            <div class="form-group">
+                <label for="profile_image">Profile Image</label>
+                <input type="text" id="image" name="profile_image" value="{{ user.image }}">
+            </div>
             
             <button type="submit" class="submit-button">Save Changes</button>
         </form>

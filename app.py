@@ -119,7 +119,8 @@ def register():
                 'favoriteCuisine': favorite_cuisine, 
                 'bio': "",
                 'followers': [],
-                'following': []
+                'following': [],
+                'image': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuALNZNOBleAkB5DNCKXvuDDER1pLckkLDb_v4pzDsshD_f3DKY1_PUpRG3vuM1faqrxo&usqp=CAU"
             })
 
         flash("Account successfully created! Please Log-In")
@@ -159,6 +160,9 @@ def edit_profile():
         bio = request.form.get('bio')
         favorite_cuisine = request.form.get('favorite_cuisine')
         cooking_skill = request.form.get('cooking_skill')
+        image = request.form.get('profile_image')
+
+
         
         # Check if username is taken by someone else
         existing_user = users.find_one({'username': username})
@@ -166,7 +170,7 @@ def edit_profile():
             flash("Username already taken!")
             return redirect(url_for('edit_profile'))
         
-        # Update user data
+        # Update user data based on image
         users.update_one(
             {'_id': ObjectId(current_user.get_id())},
             {'$set': {
@@ -174,7 +178,8 @@ def edit_profile():
                 'email': email,
                 'bio': bio,
                 'favoriteCuisine': favorite_cuisine,
-                'cookingLevel': cooking_skill
+                'cookingLevel': cooking_skill,
+                'image': image
             }}
         )
         
@@ -259,6 +264,7 @@ def add_recipe():
         recipe_type = request.form.get('recipe_type')  # 'sweet' or 'savory'
         cooking_time = request.form.get('cooking_time', '30')
         difficulty = request.form.get('difficulty', 'Intermediate')
+        image = request.form.get('image')
         
         # Create new recipe
         new_recipe = {
@@ -269,7 +275,8 @@ def add_recipe():
             'cooking_time': cooking_time,
             'difficulty': difficulty,
             'user_id': ObjectId(current_user.get_id()),
-            'created_at': datetime.datetime.now()
+            'created_at': datetime.datetime.now(),
+            'image': image
         }
         
         recipes.insert_one(new_recipe)

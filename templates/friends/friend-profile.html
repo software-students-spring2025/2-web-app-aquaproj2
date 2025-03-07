@@ -28,7 +28,7 @@
     
     <div class="profile-container">
         <div class="profile-header">
-            <div class="profile-image"></div>
+            <div class="profile-image"> <img src={{user.image}} alt="Image"></div>
             <h2 class="profile-name">{{ friend.username if friend else "Friend" }}</h2>
             <p class="profile-bio">{{ friend.bio if friend and friend.bio else "No bio available" }}</p>
             
@@ -60,7 +60,7 @@
                 <button class="following-btn">Following: {{ friend.following|length if friend and friend.following else 0 }}</button>
             </div>
         </div>
-    </div>
+    </div> 
     
     <div class="profile-tabs">
         <a href="#" class="profile-tab active" id="my-recipes-tab">Recipes</a>
